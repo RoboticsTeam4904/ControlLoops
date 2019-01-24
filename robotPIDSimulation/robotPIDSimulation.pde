@@ -6,6 +6,9 @@ class Robot {
   int xAcc;
   int yAcc;
   
+  int VEL_LIMIT;
+  int ACC_LIMIT;
+  
   int SIZE;
 
   
@@ -14,8 +17,13 @@ class Robot {
     this.y = y;
     this.xVel = 0;
     this.yVel = 0;
-    this.xAcc = 1;
-    this.yAcc = 1;
+    this.xAcc = 0;
+    this.yAcc = 0;
+    
+    // Arbitrary numbers for now
+    this.VEL_LIMIT = 30;
+    this.ACC_LIMIT = 5;
+    
     this.SIZE = 50;
   }
   
@@ -24,10 +32,14 @@ class Robot {
     stroke(0,0,0);
     rect(this.x, this.y, this.SIZE, this.SIZE);
     
-    text("("+this.x+","+this.y+")", 300, 550);
+    text("Position: ("+this.x+","+this.y+")", 250, 550);
+    text("Velocity: ("+this.xVel+","+this.yVel+")", 250, 560);
+    text("Acceleration: ("+this.xAcc+","+this.yAcc+")", 250, 570);
   }
   
   public void update() {
+    // control with arrows
+    
     this.xVel += this.xAcc;
     this.x += this.xVel;
     
@@ -48,29 +60,41 @@ class Robot {
       this.y = 600;
     }
     
-    // limit x and y speed
-    //if (this.xVel > 20) {
-    //  this.xVel = 20;
-    //}
-    //if (this.yVel > 20) {
-    //  this.yVel = 20;
-    //}
-    //if (key == CODED) {
-    //  //println("press");
-    //  //this.x += 1;
-    //  if (keyCode == LEFT) {
-    //    println("LEFT");
-    //    this.x -= 1;
-    //  }
-    //  else if (keyCode == RIGHT) {
-    //    println("RIGHT");
-    //    this.x += 1;
-    // }
-    //}      
+    // limit velocity and acceleration
+    this.xVel = constrain(this.xVel, -VEL_LIMIT, VEL_LIMIT);
+    this.yVel = constrain(this.yVel, -VEL_LIMIT, VEL_LIMIT);
+    this.xAcc = constrain(this.xAcc, -ACC_LIMIT, ACC_LIMIT);
+    this.yAcc = constrain(this.yAcc, -ACC_LIMIT, ACC_LIMIT);
+  }
+  
+  public void accelerate(String dir, int mag) {
+    if (dir == "x") {
+      this.xAcc += mag;
+    }
+    else if (dir == "y") {
+      this.yAcc += mag;
+    }
   }
 }
 
-Robot myRobot = new Robot(100, 100);
+Robot testRobot = new Robot(100, 100);
+
+public void keyPressed() {
+    if (key == CODED) {
+      if (keyCode == LEFT) {
+        testRobot.accelerate("x",-1);
+      }
+      else if (keyCode == RIGHT) {
+        testRobot.accelerate("x",1);
+      }
+      else if (keyCode == UP) {
+        testRobot.accelerate("y",-1);
+      }
+      else if (keyCode == DOWN) {
+        testRobot.accelerate("y",1);
+      }
+    }
+  }
 
 void setup() {
   size(600,600);
@@ -79,6 +103,6 @@ void setup() {
 }
 void draw() {
   background(255);
-  myRobot.display();
-  myRobot.update();
+  testRobot.display();
+  testRobot.update();
 }
