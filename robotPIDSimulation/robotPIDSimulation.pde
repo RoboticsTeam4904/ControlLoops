@@ -5,13 +5,14 @@ class Robot {
   float yVel;
   float xAcc;
   float yAcc;
- 
-  float NOISE;
   
+  float SIZE;
+  
+  float NOISE;
   float VEL_LIMIT;
   float ACC_LIMIT;
   
-  int SIZE;
+  boolean rolling;
 
   
   Robot(float x, float y) {
@@ -22,13 +23,14 @@ class Robot {
     this.xAcc = 0;
     this.yAcc = 0;
     
-    this.NOISE = 0.2;
+    this.SIZE = 50;
     
     // Arbitrary numbers for now
+    this.NOISE = 0.1;
     this.VEL_LIMIT = 30;
     this.ACC_LIMIT = 5;
     
-    this.SIZE = 50;
+    this.rolling = false;
   }
   
   public void display() {
@@ -44,11 +46,28 @@ class Robot {
   public void update(int width, int height) {
     // control with arrows
     
-    this.xVel += this.xAcc + random(-NOISE,NOISE);
-    this.x += this.xVel;
+    if (this.rolling) {
+      this.xVel += this.xAcc + random(-NOISE,NOISE);
+      this.x += this.xVel;
+      
+      this.yVel += this.yAcc + random(-NOISE,NOISE);
+      this.y += this.yVel;
+    }
     
-    this.yVel += this.yAcc + random(-NOISE,NOISE);
-    this.y += this.yVel;
+    /* Stops the robot if its speed rounds down to zero */
+    if (
+      abs(this.xAcc) < 0.5 &&
+      abs(this.yAcc) < 0.5 &&
+      abs(this.xVel) < 0.5 &&
+      abs(this.yVel) < 0.5
+      )
+    {  
+      this.rolling = false;
+      this.xAcc = 0;
+      this.yAcc = 0;
+      this.xVel = 0;
+      this.yAcc = 0;
+    }
     
     // wrap around
     if (this.x > width) {
@@ -72,6 +91,7 @@ class Robot {
   }
   
   public void accelerate(String dir, float mag) {
+    this.rolling = true;
     if (dir == "x") {
       this.xAcc += mag;
     }
