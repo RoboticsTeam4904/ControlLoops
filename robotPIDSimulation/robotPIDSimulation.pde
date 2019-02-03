@@ -34,17 +34,17 @@ class Robot {
     stroke(0,0,0);
     rect(this.x, this.y, this.SIZE, this.SIZE);
     
-    text("Position: ("+int(this.x)+","+int(this.y)+")", 500, 550);
-    text("Velocity: ("+int(this.xVel)+","+int(this.yVel)+")", 500, 560);
-    text("Acceleration: ("+int(this.xAcc)+","+int(this.yAcc)+")", 500, 570);
+    text("Position: ("+int(this.x)+","+int(this.y)+")", 800, 750);
+    text("Velocity: ("+int(this.xVel)+","+int(this.yVel)+")", 800, 760);
+    text("Acceleration: ("+int(this.xAcc)+","+int(this.yAcc)+")", 800, 770);
   }
   
   /* moves the robot every frame */
   public void update(int width, int height) {
-    this.xVel += this.xAcc; //+ random(-NOISE,NOISE);
+    this.xVel += this.xAcc + random(-NOISE,NOISE);
     this.x += this.xVel;
     
-    this.yVel += this.yAcc; //+ random(-NOISE,NOISE);
+    this.yVel += this.yAcc + random(-NOISE,NOISE);
     this.y += this.yVel;
     
     // wrap around
@@ -75,16 +75,16 @@ class Robot {
   }
   public void tune(float targetXAcc, float targetYAcc) {
     if (this.xAcc > targetXAcc) {
-      this.xAcc -= 1;
+      this.xAcc -= 0.5;
     }
     else if (this.xAcc < targetXAcc) {
-      this.xAcc += 1;
+      this.xAcc += 0.5;
     }
     if (this.yAcc > targetYAcc) {
-      this.yAcc -= 1;
+      this.yAcc -= 0.5;
     }
     else if (this.yAcc < targetYAcc) {
-      this.yAcc += 1;
+      this.yAcc += 0.5;
     }
   }
 }
@@ -101,13 +101,16 @@ class PID {
     this.d = d;
     this.f = f;
   }
-  public float update(float x, float y, float targetX, float targetY) {
-    return (targetX-x)*p;
+  public float updateX(float currentX, float targetX, float xVel) {
+    return (targetX-currentX)*this.p - xVel*this.d;
+  }
+  public float updateY(float currentY, float targetY, float yVel) {
+    return (targetY-currentY)*this.p - yVel*this.d;
   }
 }
 
 Robot testRobot = new Robot(100, 100);
-PID testPID = new PID(0.2, 0.5, 0.4, 0);
+PID testPID = new PID(0.02, 0.05, 0.04, 0);
 
 /* increments the robot's acceleration (by calling its "accelerate" method)
 when keys are pressed, mostly as a test of physics in the program */
@@ -149,7 +152,10 @@ void setup() {
 /* runs every frame */
 void draw() {
   background(255);
-  testRobot.tune(testPID.update(testRobot.x, testRobot.y, 500, 100), 0);
+  testRobot.tune(
+                 testPID.updateX(testRobot.x, 500, testRobot.xVel),
+                 testPID.updateY(testRobot.y, 200, testRobot.yVel)
+                 );
   testRobot.update(width, height);
   testRobot.display();
 }
