@@ -1,19 +1,16 @@
 class Robot {
-  float x;
-  float y;
-  float xVel;
-  float yVel;
-  float xAcc;
-  float yAcc;
+  public float x;
+  public float y;
+  public float xVel;
+  public float yVel;
+  public float xAcc;
+  public float yAcc;
   
   float SIZE;
   
   float NOISE;
   float VEL_LIMIT;
   float ACC_LIMIT;
-  
-  boolean rolling;
-
   
   Robot(float x, float y) {
     this.x = x;
@@ -29,45 +26,26 @@ class Robot {
     this.NOISE = 0.1;
     this.VEL_LIMIT = 30;
     this.ACC_LIMIT = 5;
-    
-    this.rolling = false;
   }
   
+  /* draws the robot on the canvas */
   public void display() {
     fill(color(0,0,0));
     stroke(0,0,0);
     rect(this.x, this.y, this.SIZE, this.SIZE);
     
-    text("Position: ("+int(this.x)+","+int(this.y)+")", 250, 550);
-    text("Velocity: ("+int(this.xVel)+","+int(this.yVel)+")", 250, 560);
-    text("Acceleration: ("+int(this.xAcc)+","+int(this.yAcc)+")", 250, 570);
+    text("Position: ("+int(this.x)+","+int(this.y)+")", 500, 550);
+    text("Velocity: ("+int(this.xVel)+","+int(this.yVel)+")", 500, 560);
+    text("Acceleration: ("+int(this.xAcc)+","+int(this.yAcc)+")", 500, 570);
   }
   
+  /* moves the robot every frame */
   public void update(int width, int height) {
-    // control with arrows
+    this.xVel += this.xAcc; //+ random(-NOISE,NOISE);
+    this.x += this.xVel;
     
-    if (this.rolling) {
-      this.xVel += this.xAcc + random(-NOISE,NOISE);
-      this.x += this.xVel;
-      
-      this.yVel += this.yAcc + random(-NOISE,NOISE);
-      this.y += this.yVel;
-    }
-    
-    /* Stops the robot if its speed rounds down to zero */
-    if (
-      abs(this.xAcc) < 0.5 &&
-      abs(this.yAcc) < 0.5 &&
-      abs(this.xVel) < 0.5 &&
-      abs(this.yVel) < 0.5
-      )
-    {  
-      this.rolling = false;
-      this.xAcc = 0;
-      this.yAcc = 0;
-      this.xVel = 0;
-      this.yAcc = 0;
-    }
+    this.yVel += this.yAcc; //+ random(-NOISE,NOISE);
+    this.y += this.yVel;
     
     // wrap around
     if (this.x > width) {
@@ -90,34 +68,62 @@ class Robot {
     this.yAcc = constrain(this.yAcc, -ACC_LIMIT, ACC_LIMIT);
   }
   
-  public void accelerate(String dir, float mag) {
-    this.rolling = true;
-    if (dir == "x") {
-      this.xAcc += mag;
+  /* accelerates the robot */
+  public void accelerate(float x, float y) {
+    this.xAcc += x;
+    this.yAcc += y;
+  }
+  public void tune(float targetXAcc, float targetYAcc) {
+    if (this.xAcc > targetXAcc) {
+      this.xAcc -= 1;
     }
-    else if (dir == "y") {
-      this.yAcc += mag;
+    else if (this.xAcc < targetXAcc) {
+      this.xAcc += 1;
+    }
+    if (this.yAcc > targetYAcc) {
+      this.yAcc -= 1;
+    }
+    else if (this.yAcc < targetYAcc) {
+      this.yAcc += 1;
     }
   }
 }
 
-Robot testRobot = new Robot(100, 100);
+class PID {
+  float p;
+  float i;
+  float d;
+  float f;
+  
+  PID(float p, float i, float d, float f) {
+    this.p = p;
+    this.i = i;
+    this.d = d;
+    this.f = f;
+  }
+  public float update(float x, float y, float targetX, float targetY) {
+    return (targetX-x)*p;
+  }
+}
 
-/* increments the robot's acceleration (by calling its
-"accelerate" method) when keys are pressed */
+Robot testRobot = new Robot(100, 100);
+PID testPID = new PID(0.2, 0.5, 0.4, 0);
+
+/* increments the robot's acceleration (by calling its "accelerate" method)
+when keys are pressed, mostly as a test of physics in the program */
 public void keyPressed() {
   if (key == CODED) {
     if (keyCode == LEFT) {
-      testRobot.accelerate("x",-1);
+      testRobot.accelerate(-1,0);
     }
     else if (keyCode == RIGHT) {
-      testRobot.accelerate("x",1);
+      testRobot.accelerate(1,0);
     }
     else if (keyCode == UP) {
-      testRobot.accelerate("y",-1);
+      testRobot.accelerate(0,-1);
     }
     else if (keyCode == DOWN) {
-      testRobot.accelerate("y",1);
+      testRobot.accelerate(0,1);
     }
   }
 }
@@ -130,7 +136,7 @@ void setup() {
   width = 1000;
   height = 1000;
   
-  // so that it doesn't say that the variables aren't used
+  // so that Processing doesn't say that the variables aren't used
   println(width);
   println(height);
   
@@ -143,6 +149,7 @@ void setup() {
 /* runs every frame */
 void draw() {
   background(255);
-  testRobot.display();
+  testRobot.tune(testPID.update(testRobot.x, testRobot.y, 500, 100), 0);
   testRobot.update(width, height);
+  testRobot.display();
 }
