@@ -5,26 +5,27 @@ class Elevator {
   public float yAcc;
   public float MAX_HEIGHT;
   public float MIN_HEIGHT;
+  public int time;
   
   float SIZE;
-  
   float NOISE;
   float VEL_LIMIT;
   float ACC_LIMIT;
+  float GRAVITY;
   
   Elevator(float y) {
     this.y = y;
     this.yVel = 0;
     this.yAcc = 0;
-    this.MAX_HEIGHT = 1000;
-    this.MIN_HEIGHT = 0;
-    
+    this.MAX_HEIGHT = 800;
+    this.MIN_HEIGHT = 200;
     this.SIZE = 50;
     
     // Arbitrary numbers for now
     this.NOISE = 0.1;
     this.VEL_LIMIT = 30;
     this.ACC_LIMIT = 5;
+    this.GRAVITY = 0.981;
   }
   
   /* draws the robot on the canvas */
@@ -36,14 +37,16 @@ class Elevator {
     text("Position: "+int(this.y), 800, 750);
     text("Velocity: "+int(this.yVel), 800, 760);
     text("Acceleration: "+int(this.yAcc), 800, 770);
+    text("Time: "+(float(this.time)/10), 800, 780);
   }
   
   /* moves the robot every frame */
   public void update() {
  
-    this.yVel += this.yAcc + random(-NOISE,NOISE);
+    this.yVel += this.yAcc + random(-NOISE,NOISE) + GRAVITY;
     this.pastY = this.y;
     this.y += this.yVel;
+    this.time += 1;
     
     if (this.y > this.MAX_HEIGHT) {
       this.y = MAX_HEIGHT;
@@ -93,11 +96,11 @@ class ElevatorPID {
   public float updateY(float currentY, float pastY, float targetY) {
     this.error = targetY-currentY;
     this.yErrorSum += this.error;
-    return this.error*this.p - (currentY-pastY)*this.d;// + this.yErrorSum*this.i;
+    return this.error*this.p - (currentY-pastY)*this.d + this.yErrorSum*this.i;
   }
 }
 
-Elevator testElevator = new Elevator(100);
+Elevator testElevator = new Elevator(200);
 ElevatorPID elevatorTestPID = new ElevatorPID(0.02, 0.0005, 0.04, 0);
 
 /* increments the robot's acceleration (by calling its "accelerate" method)
@@ -118,13 +121,13 @@ void setup() {
  
   size(1000,1000);
   background(255);
-  frameRate(12);
+  frameRate(10);
 }
 
 /* runs every frame */
 void draw() {
   background(255);
-  testElevator.tune(elevatorTestPID.updateY(testElevator.y, testElevator.pastY, 200));
+  testElevator.tune(elevatorTestPID.updateY(testElevator.y, testElevator.pastY, 500));
   testElevator.update();
   testElevator.display();
 }
