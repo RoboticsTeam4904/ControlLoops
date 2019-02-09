@@ -1,5 +1,6 @@
 class Elevator {
   public float y;
+  public float pastY;
   public float yVel;
   public float yAcc;
   public float MAX_HEIGHT;
@@ -15,8 +16,8 @@ class Elevator {
     this.y = y;
     this.yVel = 0;
     this.yAcc = 0;
-    this.MAX_HEIGHT = 800;
-    this.MIN_HEIGHT = 200;
+    this.MAX_HEIGHT = 1000;
+    this.MIN_HEIGHT = 0;
     
     this.SIZE = 50;
     
@@ -41,6 +42,7 @@ class Elevator {
   public void update() {
  
     this.yVel += this.yAcc + random(-NOISE,NOISE);
+    this.pastY = this.y;
     this.y += this.yVel;
     
     if (this.y > this.MAX_HEIGHT) {
@@ -89,14 +91,14 @@ class ElevatorPID {
   }
  
   public float updateY(float currentY, float pastY, float targetY) {
-    this.error = currentY-targetY;
+    this.error = targetY-currentY;
     this.yErrorSum += this.error;
-    return this.error*this.p - (currentY-pastY)*this.d;
+    return this.error*this.p - (currentY-pastY)*this.d;// + this.yErrorSum*this.i;
   }
 }
 
 Elevator testElevator = new Elevator(100);
-ElevatorPID elevatorTestPID = new ElevatorPID(0.02, 0.05, 0.04, 0);
+ElevatorPID elevatorTestPID = new ElevatorPID(0.02, 0.0005, 0.04, 0);
 
 /* increments the robot's acceleration (by calling its "accelerate" method)
 when keys are pressed, mostly as a test of physics in the program */
@@ -122,9 +124,7 @@ void setup() {
 /* runs every frame */
 void draw() {
   background(255);
-  testElevator.tune(
-                 elevatorTestPID.updateY(testElevator.y, 200, testElevator.yVel)
-                 );
+  testElevator.tune(elevatorTestPID.updateY(testElevator.y, 200, testElevator.yVel));
   testElevator.update();
   testElevator.display();
 }
