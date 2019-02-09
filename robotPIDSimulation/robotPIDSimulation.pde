@@ -53,19 +53,19 @@ class Robot {
     this.pastY = this.y;
     this.y += this.yVel;
     
-    // wrap around
-    //if (this.x > width) {
-    //  this.x = 0;
-    //}
-    //else if (this.x < 0) {
-    //  this.x = width;
-    //}
-    //if (this.y > height) {
-    //  this.y = 0;
-    //}
-    //else if (this.y < 0) {
-    //  this.y = height;
-    //}
+    // can't go past edges of screen
+    if (this.x > width) {
+      this.x = width;
+    }
+    else if (this.x < 0) {
+      this.x = 0;
+    }
+    if (this.y > height) {
+      this.y = height;
+    }
+    else if (this.y < 0) {
+      this.y = 0;
+    }
     
     // limit velocity and acceleration
     this.xVel = constrain(this.xVel, -VEL_LIMIT, VEL_LIMIT);
@@ -79,6 +79,8 @@ class Robot {
     this.xAcc += x;
     this.yAcc += y;
   }
+  
+  /* accelerates towards target acceleration */
   public void tune(float targetXAcc, float targetYAcc) {
     if (this.xAcc > targetXAcc) {
       this.xAcc -= 0.5;
@@ -115,20 +117,19 @@ class PID {
     this.yErrorSum = 0;
   }
   public float updateX(float currentX, float pastX, float targetX) {
-    this.error = currentX-targetX;
+    this.error = targetX-currentX;
     this.xErrorSum += this.error;
-    println(this.xErrorSum);
-    return this.error*this.p - (currentX-pastX)*this.d - this.xErrorSum*this.i;
+    return this.error*this.p - (currentX-pastX)*this.d + this.xErrorSum*this.i;
   }
   public float updateY(float currentY, float pastY, float targetY) {
-    this.error = currentY-targetY;
+    this.error = targetY-currentY;
     this.yErrorSum += this.error;
-    return this.error*this.p - (currentY-pastY)*this.d - this.yErrorSum*this.i;
+    return this.error*this.p - (currentY-pastY)*this.d + this.yErrorSum*this.i;
   }
 }
 
 Robot testRobot = new Robot(100, 100);
-PID testPID = new PID(0.02, 0.05, 0.004, 0);
+PID testPID = new PID(0.02, 0.0005, 0.04, 0);
 
 /* increments the robot's acceleration (by calling its "accelerate" method)
 when keys are pressed, mostly as a test of physics in the program */
@@ -164,7 +165,7 @@ void setup() {
   // can't use variables for size...
   size(1000,1000);
   background(255);
-  frameRate(6);
+  frameRate(12);
 }
 
 /* runs every frame */
@@ -172,7 +173,7 @@ void draw() {
   background(255);
   testRobot.tune(
                  testPID.updateX(testRobot.x, testRobot.pastX, 500),
-                 testPID.updateY(testRobot.y, testRobot.pastY, 100)
+                 testPID.updateY(testRobot.y, testRobot.pastY, 300)
                  );
   testRobot.update(width, height);
   testRobot.display();
