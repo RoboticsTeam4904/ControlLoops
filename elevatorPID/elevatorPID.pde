@@ -117,14 +117,14 @@ public void keyPressed() {
 void setup() {
  
   size(1000,1000);
-  background(255); 
+  background(255);
   frameRate(12);
 }
 
 /* runs every frame */
 void draw() {
   background(255);
-  testElevator.tune(elevatorTestPID.updateY(testElevator.y, 200, testElevator.yVel));
+  testElevator.tune(elevatorTestPID.updateY(testElevator.y, testElevator.pastY, 200));
   testElevator.update();
   testElevator.display();
 }
