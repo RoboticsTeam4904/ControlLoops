@@ -9,10 +9,15 @@ class Robot {
   public float yAcc;
   
   float SIZE;
-  
   float NOISE;
   float VEL_LIMIT;
   float ACC_LIMIT;
+  float GRAVITY;
+  float MASS;
+  float FRICTION_COEFF;
+  
+  float F_NORMAL;
+  float F_FRICTION;
   
   Robot(float x, float y) {
     this.x = x;
@@ -24,14 +29,29 @@ class Robot {
     this.xAcc = 0;
     this.yAcc = 0;
     
-    this.SIZE = 50;
-    
     // Arbitrary numbers for now
+    this.SIZE = 50;
     this.NOISE = 0.1;
     this.VEL_LIMIT = 30;
     this.ACC_LIMIT = 5;
+    this.GRAVITY = 0.981;
+    this.MASS = 1;
+    this.FRICTION_COEFF = 0.96;
+    
+    this.F_NORMAL = this.GRAVITY * this.MASS;
+    this.F_FRICTION = this.F_NORMAL * this.FRICTION_COEFF;
   }
-  
+  float is_negative(float value) {
+    if (value > 0) {
+      return 1;
+    }
+    else if (value < 0) {
+      return -1;
+    }
+    else {
+      return 0;
+    }
+  }
   /* draws the robot on the canvas */
   public void display() {
     fill(color(0,0,0));
@@ -45,11 +65,19 @@ class Robot {
   
   /* moves the robot every frame */
   public void update(int width, int height) {
-    this.xVel += this.xAcc + random(-NOISE,NOISE);
+    this.xVel += (
+                  this.xAcc +
+                  random(-NOISE,NOISE) -
+                  (this.is_negative(this.xVel)*this.F_FRICTION)
+                  );
     this.pastX = this.x;
     this.x += this.xVel;
     
-    this.yVel += this.yAcc + random(-NOISE,NOISE);
+    this.yVel += (
+                  this.yAcc +
+                  random(-NOISE,NOISE) -
+                  (this.is_negative(this.yVel)*this.F_FRICTION)
+                  );
     this.pastY = this.y;
     this.y += this.yVel;
     
@@ -83,16 +111,16 @@ class Robot {
   /* accelerates towards target acceleration */
   public void tune(float targetXAcc, float targetYAcc) {
     if (this.xAcc > targetXAcc) {
-      this.xAcc -= 0.5;
+      this.xAcc -= 1;
     }
     else if (this.xAcc < targetXAcc) {
-      this.xAcc += 0.5;
+      this.xAcc += 1;
     }
     if (this.yAcc > targetYAcc) {
-      this.yAcc -= 0.5;
+      this.yAcc -= 1;
     }
     else if (this.yAcc < targetYAcc) {
-      this.yAcc += 0.5;
+      this.yAcc += 1;
     }
   }
 }
