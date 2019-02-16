@@ -157,6 +157,35 @@ class PID {
   }
 }
 
+class PIDNeuralNetwork extends PID {
+  float xPIDError;
+  float yPIDError;
+  float xPIDErrorSum;
+  float yPIDErrorSum;
+  
+  PIDNeuralNetwork(float p, float i, float d, float f) {
+      super(p, i, d, f);
+      xPIDError = 0;
+      yPIDError = 0;
+      xPIDErrorSum = 0;
+      yPIDErrorSum = 0;
+    }
+  
+  public float updateX(float currentX, float targetX) {
+    this.error = targetX-currentX;
+    this.xPIDError = this.error * this.error;
+    this.xPIDErrorSum +=  this.xPIDError;
+    return this.xPIDErrorSum;
+  }
+  
+  public float updateY(float currentY, float targetY) {
+    this.error = targetY-currentY;
+    this.yPIDError = this.error * this.error;
+    this.yPIDErrorSum +=  this.yPIDError;
+    return this.yPIDErrorSum;
+  }
+}
+
 Robot testRobot = new Robot(100, 100);
 PID testPID = new PID(0.02, 0.0005, 0.04, 0);
 
