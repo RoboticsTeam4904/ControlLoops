@@ -184,6 +184,12 @@ class PIDNeuralNetwork extends PID {
     this.yPIDErrorSum +=  this.yPIDError;
     return this.yPIDErrorSum;
   }
+  
+  public void updateConstants(float p, float i, float d) {
+    this.p = p;
+    this.i = i;
+    this.d = d;
+  }
 }
 
 Robot testRobot = new Robot(100, 100);
