@@ -29,7 +29,7 @@ class Elevator {
   }
   
   public Boolean isFinished(float target) {
-    return (abs(yVel) <= 1 && abs(target - this.y) <= 5);
+    return (abs(yVel) <= 1 && abs(target - this.y) <= 5) || time > 1000;
   }
   
   /* draws the robot on the canvas */
@@ -38,6 +38,9 @@ class Elevator {
     stroke(0,0,0);
     rect(250, this.y, this.SIZE, this.SIZE);
     
+    fill(color(0,255,0));
+    rect(270, target, 10, 10);
+    fill(color(0,0,0));
     text("Position: "+int(this.y), 800, 750);
     text("Velocity: "+int(this.yVel), 800, 760);
     text("Acceleration: "+int(this.yAcc), 800, 770);
@@ -138,7 +141,7 @@ class PIDNeuralNetwork extends ElevatorPID {
     
     this.pLearningRate = 0.4904 * pow(10,-9);
     this.iLearningRate = 0.4904 * pow(10,-10);
-    this.dLearningRate = 0.4904 * pow(10,-6);
+    this.dLearningRate = 0.1904 * pow(10,-6);
     
     this.firstRun = true;
   }
@@ -189,12 +192,13 @@ class PIDNeuralNetwork extends ElevatorPID {
   }
   
   public void updateConstants() {
+    println("Old Constants", this.p, this.i, this.d);
     this.p -= this.pLearningRate * this.partialDerivativeP;
     this.i -= this.iLearningRate * this.partialDerivativeI;
     this.d -= this.dLearningRate * this.partialDerivativeD;
     
     println(this.partialDerivativeP, this.partialDerivativeI, this.partialDerivativeD);
-    println(this.p, this.i, this.d);
+    println("New Constants", this.p, this.i, this.d);
     
     //this.p = constrain(abs(this.p), 0.001, 1);
     //this.i = constrain(abs(this.i), 0.00001, 1);
@@ -233,7 +237,7 @@ void draw() {
       elevatorTestPID.updateYD(testElevator.y, testElevator.pastY);
     }
   } else {
-    println(time);
+    println("Time Taken: ", time);
     elevatorTestPID.updateConstants();
     elevatorTestPID.reset();
     testElevator.reset();
