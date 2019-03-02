@@ -29,7 +29,7 @@ class Elevator {
   }
   
   public Boolean isFinished(float target) {
-    return (abs(yVel) <= 1 && abs(target - this.y) <= 5) || time > 1000;
+    return (abs(yVel) <= 0.5 && abs(target - this.y) <= 1) || time > 1000;
   }
   
   /* draws the robot on the canvas */
@@ -48,9 +48,10 @@ class Elevator {
   
   /* moves the robot every frame */
   public void update() {
-    this.yVel += this.yAcc /*+ random(-NOISE,NOISE)*/ + GRAVITY;
+    this.yVel += this.yAcc /*+ random(-NOISE,NOISE) + GRAVITY*/;
     this.pastY = this.y;
     this.y += this.yVel;
+    //println("Velocity", this.yVel);
     
     //this.y = constrain(this.y, this.MIN_HEIGHT, this.MAX_HEIGHT);
     
@@ -65,12 +66,14 @@ class Elevator {
   }
   public void tune(float targetYAcc) {
    
-    if (this.yAcc > targetYAcc) {
-      this.yAcc -= 0.5;
-    }
-    else if (this.yAcc < targetYAcc) {
-      this.yAcc += 0.5;
-    }
+    //if (this.yAcc > targetYAcc) {
+    //  this.yAcc -= 0.5;
+    //}
+    //else if (this.yAcc < targetYAcc) {
+    //  this.yAcc += 0.5;
+    //}
+    
+    yAcc = targetYAcc;
   }
   public void reset() {
     this.y = 200;
@@ -79,7 +82,6 @@ class Elevator {
     this.yAcc = 0;
   }
 }
-
 
 class ElevatorPID {
   float p;
@@ -111,9 +113,6 @@ class PIDNeuralNetwork extends ElevatorPID {
   float iSum;
   float dSum;
   
-  //float[] bestPIDConstants;
-  //float bestTime;
-  
   float partialDerivativeP;
   float partialDerivativeI;
   float partialDerivativeD;
@@ -135,13 +134,9 @@ class PIDNeuralNetwork extends ElevatorPID {
     this.iSum = 0;
     this.dSum = 0;
     
-    //this.bestPIDConstants[0] = p;
-    //this.bestPIDConstants[1] = i;
-    //this.bestPIDConstants[2] = d;
-    
-    this.pLearningRate = 0.4904 * pow(10,-9);
-    this.iLearningRate = 0.4904 * pow(10,-10);
-    this.dLearningRate = 0.1904 * pow(10,-6);
+    this.pLearningRate = 0.4904 * pow(10,-8);
+    this.iLearningRate = 0.4904 * pow(10,-9);
+    this.dLearningRate = 0.1904 * pow(10,-5);
     
     this.firstRun = true;
   }
@@ -161,13 +156,9 @@ class PIDNeuralNetwork extends ElevatorPID {
   }
   
   public void updateYI(float currentY,float pastY) {
-    //println("Error:", this.error);
-    //println("Y:", currentY, pastY);
-    //println("Sum:", this.PIDSum, this.pastPIDSum);
     this.summationTerm = (this.error *
                 ((currentY-pastY)/(this.PIDSum-this.pastPIDSum)) *
                 this.yErrorSum);
-    //println("Summation:", this.summationTerm);
     this.iSum += this.summationTerm;
     this.partialDerivativeI = (-2/time) * this.iSum;
   }
@@ -197,8 +188,14 @@ class PIDNeuralNetwork extends ElevatorPID {
     this.i -= this.iLearningRate * this.partialDerivativeI;
     this.d -= this.dLearningRate * this.partialDerivativeD;
     
-    println(this.partialDerivativeP, this.partialDerivativeI, this.partialDerivativeD);
+    println(
+            "Partial Derivatives",
+            this.partialDerivativeP,
+            this.partialDerivativeI,
+            this.partialDerivativeD
+           );
     println("New Constants", this.p, this.i, this.d);
+    println(" ");
     
     //this.p = constrain(abs(this.p), 0.001, 1);
     //this.i = constrain(abs(this.i), 0.00001, 1);
@@ -206,7 +203,7 @@ class PIDNeuralNetwork extends ElevatorPID {
   }
 }
 
-float target = 500;
+float target = 203;
 public float time = 0;
 int frameRate = 100;
 
