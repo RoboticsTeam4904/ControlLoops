@@ -1,3 +1,4 @@
+/* Physics Box (tm) that can move in one dimension */
 class Elevator {
   public float y;
   public float pastY;
@@ -32,14 +33,17 @@ class Elevator {
     return (abs(yVel) <= 0.5 && abs(target - this.y) <= 1) || time > 1000;
   }
   
-  /* draws the robot on the canvas */
+  /* draws the elevator on the canvas */
   public void display() {
+    // elevator
     fill(color(0,0,0));
     stroke(0,0,0);
     rect(250, this.y, this.SIZE, this.SIZE);
     
+    // target
     fill(color(0,255,0));
-    rect(270, target, 10, 10);
+    rect(270, target+SIZE/2, 10, 10);
+    
     fill(color(0,0,0));
     text("Position: "+int(this.y), 800, 750);
     text("Velocity: "+int(this.yVel), 800, 760);
@@ -48,7 +52,7 @@ class Elevator {
   
   /* moves the robot every frame */
   public void update() {
-    this.yVel += this.yAcc /*+ random(-NOISE,NOISE) + GRAVITY*/;
+    this.yVel += this.yAcc /*+ random(-NOISE,NOISE)*/ + GRAVITY;
     this.pastY = this.y;
     this.y += this.yVel;
     //println("Velocity", this.yVel);
@@ -83,6 +87,7 @@ class Elevator {
   }
 }
 
+/* Implements a PID control loop */
 class ElevatorPID {
   float p;
   float i;
@@ -104,10 +109,13 @@ class ElevatorPID {
   }
 }
 
+/* Tunes the PID constants automatically by calculating partial derivatives */
 class PIDNeuralNetwork extends ElevatorPID {
   float PIDSum;
   float pastPIDSum;
   float summationTerm;
+  float yDiff;
+  float PIDAccDiff;
   
   float pSum;
   float iSum;
@@ -126,67 +134,90 @@ class PIDNeuralNetwork extends ElevatorPID {
   PIDNeuralNetwork(float p, float i, float d) {
     super(p, i, d);
     
-    this.summationTerm = 0;
     this.PIDSum = 1;
     this.pastPIDSum = 0;
+    this.summationTerm = 0;
+    this.yDiff = 1;
+    this.PIDAccDiff = 1;
     
     this.pSum = 0;
     this.iSum = 0;
     this.dSum = 0;
+        
+    this.partialDerivativeP = 0;
+    this.partialDerivativeI = 0;
+    this.partialDerivativeD = 0;
     
     this.pLearningRate = 0.4904 * pow(10,-8);
     this.iLearningRate = 0.4904 * pow(10,-9);
-    this.dLearningRate = 0.1904 * pow(10,-5);
+    this.dLearningRate = 0.4904 * pow(10,-5);
     
     this.firstRun = true;
   }
   
+  /* called every frame */
   public void sum(float currentY,float pastY) {
-    //println("Error sum:", this.yErrorSum);
+    this.yDiff = currentY-pastY;
+    this.PIDAccDiff = this.PIDSum-this.pastPIDSum;
+    if (yDiff == 0 || this.PIDAccDiff == 0) {
+      this.yDiff = 1;
+      this.PIDAccDiff = 1;
+    }
+    
     this.pastPIDSum = this.PIDSum;
-    this.PIDSum = this.error*this.p - (currentY-pastY)*this.d + this.yErrorSum*this.i;
+    this.PIDSum = this.error*this.p - this.yDiff*this.d + this.yErrorSum*this.i;
   }
   
-  public void updateYP(float currentY,float pastY) {
+  public void updateYP() {
     this.summationTerm = (this.error *
-                ((currentY-pastY)/(this.PIDSum-this.pastPIDSum)) *
+                (this.yDiff/this.PIDAccDiff) *
                 this.error);
+    println(this.error, "^2  * (", this.yDiff, "/", this.PIDAccDiff, ")");
     this.pSum += this.summationTerm;
+    println("Summation:", this.pSum);
     this.partialDerivativeP = (-2/time) * this.pSum;
+    println(this.partialDerivativeP);
+    println();
   }
   
-  public void updateYI(float currentY,float pastY) {
+  public void updateYI() {
     this.summationTerm = (this.error *
-                ((currentY-pastY)/(this.PIDSum-this.pastPIDSum)) *
+                (this.yDiff/this.PIDAccDiff) *
                 this.yErrorSum);
     this.iSum += this.summationTerm;
     this.partialDerivativeI = (-2/time) * this.iSum;
   }
   
-  public void updateYD(float currentY,float pastY) {
+  public void updateYD() {
     this.summationTerm = (this.error *
-                (currentY-pastY)/(this.PIDSum-this.pastPIDSum) *
-                (currentY-pastY));
+                (this.yDiff/this.PIDAccDiff) *
+                this.yDiff);
     this.dSum += this.summationTerm;
     this.partialDerivativeD = (-2/time) * this.dSum;
   }
   
   public void reset() {
+    this.PIDSum = 0;
+    this.pastPIDSum = 0;
+    this.yDiff = 1;
+    this.PIDAccDiff = 1;
+    
     this.pSum = 0;
     this.iSum = 0;
     this.dSum = 0;
-    
-    this.PIDSum = 0;
-    this.pastPIDSum = 0;
+        
+    this.partialDerivativeP = 0;
+    this.partialDerivativeI = 0;
+    this.partialDerivativeD = 0;
     
     this.firstRun = true;
   }
   
   public void updateConstants() {
     println("Old Constants", this.p, this.i, this.d);
-    this.p -= this.pLearningRate * this.partialDerivativeP;
-    this.i -= this.iLearningRate * this.partialDerivativeI;
-    this.d -= this.dLearningRate * this.partialDerivativeD;
+    this.p += this.pLearningRate * this.partialDerivativeP;
+    this.i += this.iLearningRate * this.partialDerivativeI;
+    this.d += this.dLearningRate * this.partialDerivativeD;
     
     println(
             "Partial Derivatives",
@@ -197,18 +228,18 @@ class PIDNeuralNetwork extends ElevatorPID {
     println("New Constants", this.p, this.i, this.d);
     println(" ");
     
-    //this.p = constrain(abs(this.p), 0.001, 1);
-    //this.i = constrain(abs(this.i), 0.00001, 1);
-    //this.d = constrain(abs(this.d), 0.001, 1);
+    this.p = constrain(abs(this.p), 0, 1);
+    this.i = constrain(abs(this.i), 0, 1);
+    this.d = constrain(abs(this.d), 0, 1);
   }
 }
 
-float target = 203;
+float target = 300;
 public float time = 0;
 int frameRate = 100;
 
 Elevator testElevator = new Elevator(200);
-PIDNeuralNetwork elevatorTestPID = new PIDNeuralNetwork(0.02, 0.0005, 0.04);
+PIDNeuralNetwork elevatorTestPID = new PIDNeuralNetwork(0.023084136, 0.00009914792, 0.09607398);
 
 /* called once at the start of the program */
 void setup() {
@@ -226,16 +257,20 @@ void draw() {
     testElevator.tune(elevatorTestPID.updateY(testElevator.y, testElevator.pastY, target));
     testElevator.update();
     elevatorTestPID.sum(testElevator.y, testElevator.pastY);
+    
+    /* Doesn't sum partial derivatives the first frame because there is no "previous frame" and it 
+    will result in dividing by zero */
     if (elevatorTestPID.firstRun) {
       elevatorTestPID.firstRun = false;
     } else {
-      elevatorTestPID.updateYP(testElevator.y, testElevator.pastY);
-      elevatorTestPID.updateYI(testElevator.y, testElevator.pastY);
-      elevatorTestPID.updateYD(testElevator.y, testElevator.pastY);
+      elevatorTestPID.updateYP();
+      elevatorTestPID.updateYI();
+      elevatorTestPID.updateYD();
     }
   } else {
     println("Time Taken: ", time);
     elevatorTestPID.updateConstants();
+    //noLoop();
     elevatorTestPID.reset();
     testElevator.reset();
     time = 0;
