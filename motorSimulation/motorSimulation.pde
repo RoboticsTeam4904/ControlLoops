@@ -41,12 +41,15 @@ class Motor {
       this.voltage-(this.angularVelocity/this.ANGULAR_VELOCITY_CONSTANT))) / 
       (this.RESISTANCE * this.current);
     this.angle = this.angle + this.angularVelocity * timeStep;
+    if (this.angle >= 360) {
+      this.angle -= 360;
+    }
     this.angularVelocity = this.angularVelocity + this.changeAngularVelocity * timeStep;
   }
   
   void display() {
-    println("Angle: " + this.angle, 300, 300);
-    println("Angular velocity: " + this.angularVelocity, 300, 320);
+    println("Angle: " + this.angle);
+    println("Angular velocity: " + this.angularVelocity);
   }
 }
 
