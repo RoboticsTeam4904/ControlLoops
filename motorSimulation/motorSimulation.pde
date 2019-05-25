@@ -46,7 +46,7 @@ class Motor {
     }
     this.angularVelocity = this.angularVelocity + this.changeAngularVelocity * timeStep;
   }
-  
+  //karen was here
   void display() {
     println("Angle: " + this.angle);
     println("Angular velocity: " + this.angularVelocity);
