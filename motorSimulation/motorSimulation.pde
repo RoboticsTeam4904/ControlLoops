@@ -124,7 +124,7 @@ class RollerElevator {
   
   RollerElevator(Gearbox gearbox) {
     this.gearbox = gearbox;
-    this.ROLLER_RADIUS = 50;
+    this.ROLLER_RADIUS = 30;
     this.ROLLER_X = 350;
     this.ROLLER_Y = 250;
     this.angularVelocity = this.gearbox.newAngularVelocity();
