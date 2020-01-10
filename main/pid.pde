@@ -17,7 +17,7 @@ PID(float p, float i, float d, float timeStep) {
  
   public float update(float current, float last, float target) {
     this.error = target-current;
-    this.errorSum += this.error;
-    return this.error*this.p - (current-last)*this.d/this.timeStep + this.errorSum*this.i;
+    this.errorSum += this.error/this.timeStep;
+    return this.error*this.p - (current-last)*this.d + this.errorSum*this.i;
   }
 }
