@@ -1,7 +1,7 @@
 Flywheel fly = new Flywheel();
 float timeStep = 0.1;
 
-PID pid = new PID(1, 0, 0);
+PID pid = new PID(10, 0, 0, timeStep);
 
 float targetVelocity = 30;
 

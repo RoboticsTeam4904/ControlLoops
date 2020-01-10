@@ -15,7 +15,7 @@ class Flywheel {
   float CIRCLE_RADIUS;
   float GEAR_RATIO;
   
-  FloatList state;
+  //FloatList state;
   
   Flywheel() {
     this.voltage = 2;
@@ -23,7 +23,6 @@ class Flywheel {
     this.angle = 0;
     this.angularVelocity = 0;
     
-        
     this.TORQUE_CONSTANT = 4.904;
     this.ANGULAR_VELOCITY_CONSTANT = 5.026; 
     this.RESISTANCE = 1.323;
