@@ -5,6 +5,8 @@ PID pid = new PID(10, 0, 0, timeStep);
 
 float targetVelocity = 30;
 
+Grapher g = new Grapher(targetVelocity);
+
 float lastV = fly.angularVelocity;
 
 void setup() {
@@ -17,4 +19,5 @@ void draw() {
   fly.update(pid.update(fly.angularVelocity, lastV, targetVelocity), timeStep);
   lastV = fly.angularVelocity;
   fly.display();
+  g.display();
 }
