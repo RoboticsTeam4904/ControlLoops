@@ -1,7 +1,7 @@
 Flywheel fly = new Flywheel();
 float timeStep = 0.1;
 
-PID pid = new PID(5, 0.5, 0, timeStep);
+PID pid = new PID(15, 0, 0, timeStep);
 
 float targetVelocity = 30;
 
@@ -19,5 +19,6 @@ void draw() {
   fly.update(pid.update(fly.angularVelocity, lastV, targetVelocity), timeStep);
   lastV = fly.angularVelocity;
   fly.display();
+  g.addPoint(fly.angularVelocity);
   g.display();
 }
