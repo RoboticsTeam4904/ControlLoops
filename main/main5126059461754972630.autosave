@@ -1,0 +1,41 @@
+Flywheel fly = new Flywheel();
+float timeStep = 0.1;
+
+PID pid = new PID(0.1, 0, 1, timeStep);
+
+float targetVelocity = 50;
+
+Grapher g = new Grapher(targetVelocity);
+
+float threshold = 0.1;
+float timeThreshold = 0.1;
+
+boolean alreadySetTime = false;
+
+float framesOnTarget = 0;
+
+void setup() {
+  size(500,500);
+  background(255);
+}
+
+void draw() {
+  background(255,255,255);
+  float pidOut = pid.update(fly.angularVelocity, fly.lastAV, targetVelocity);
+  fly.update(pidOut, timeStep);
+  fly.display();
+  g.addPoint(fly.angularVelocity);
+  g.display();
+  
+  if(onTarget) {
+    framesOnTarget += 1
+  } else {
+    framesOnTarget= 0;
+  }
+  
+  if(framesONTarget > 10) {
+    we did it    
+  }
+  
+  text("Finished in : "+ 5 + " seconds", 50, 50);
+}

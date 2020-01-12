@@ -1,8 +1,7 @@
-class Grapher {
+class TimingGrapher {
   
-  float target;
   
-  float startScale = 3;
+  float startScale = 30;
   
   float scale = startScale;
   
@@ -13,8 +12,7 @@ class Grapher {
   
   ArrayList<Float> points;
   
-  Grapher(float target) {
-    this.target = target;
+  TimingGrapher() {
     points = new ArrayList<Float>();
   }
   
@@ -31,9 +29,7 @@ class Grapher {
     fill(255,255,255);
     rect(xPos, yPos-100, 400, 100);
     stroke(0, 255, 0);
-   
-    line(xPos, yPos - target, xPos + 400, yPos - target);
-    
+       
     stroke(0, 0, 0);
     boolean increaseScale = false;
     fill(0, 0, 0);
@@ -46,7 +42,6 @@ class Grapher {
     if(increaseScale) {
       scale /= 1.5;
     }
-    
     
     textSize(15);
     text("Velocity ", 0, 0);
