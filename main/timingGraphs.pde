@@ -7,10 +7,14 @@ class TimingGrapher {
   
   float sum = 0;
   
+  float yScale = 10;
+  
+  
   public int yPos = 450;
   public int xPos = 50;
   
   ArrayList<Float> points;
+  
   
   TimingGrapher() {
     points = new ArrayList<Float>();
@@ -18,10 +22,13 @@ class TimingGrapher {
   
   void addPoint(float y) {
     points.add(y);
+    
+    yScale = 100/points.get(0)-1;
   }
   
   int ftopos(float f) {
-    return (int) (yPos - (10 *  f));
+    
+    return (int) (yPos - (yScale *  f));
   }
   
   void display() {  

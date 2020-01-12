@@ -11,7 +11,7 @@ float threshold = 0.05;
 
 //PID pid = new PID(1, 0, 3, timeStep);
 
-PIDAutoTuner pid = new PIDAutoTuner(1, 0, 3, timeStep);
+PIDAutoTuner pid = new PIDAutoTuner(1, 0, 15, timeStep);
 
 float targetVelocity = 50;
 
