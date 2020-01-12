@@ -34,7 +34,7 @@ void draw() {
   if (framesOnTarget > 15){
     println(fly.angularVelocity);
     if(! alreadySetFinished){
-      timeFromStart= millis()/1000;
+      timeFromStart= millis()/1000.0;
       alreadySetFinished=true;
     }
   text("Finished in : "+ timeFromStart, 50, 50 );
