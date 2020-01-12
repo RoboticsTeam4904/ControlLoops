@@ -56,12 +56,7 @@ class Flywheel {
   //calculates the angular velocity of the motor, given the amount of time passed and
   //the voltage of the motor
   void update(float newVoltage, float timeStep) {
-    
-    println("torque constant:" + this.TORQUE_CONSTANT);
-    println("angular velocity constant:" + this.ANGULAR_VELOCITY_CONSTANT);
-    println("resistance:" + this.RESISTANCE);
-    println("torque constant:" + this.TORQUE_CONSTANT);
-    println("new voltage: " + str(newVoltage));
+
     this.voltage += newVoltage;
     //this.AngularAcceleration = (this.TORQUE_CONSTANT*(
     //  this.voltage-(this.angularVelocity/this.ANGULAR_VELOCITY_CONSTANT))) / 

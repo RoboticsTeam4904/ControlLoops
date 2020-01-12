@@ -20,8 +20,6 @@ PID(float p, float i, float d, float timeStep) {
     this.errorSum += this.error*this.timeStep;
     //println(this.error*this.p);
     //println(this.error*this.p - (current-last)*this.d + this.errorSum*this.i);
-    println(current-last);
-    println();
     
     return this.error*this.p - (current-last)*this.d + this.errorSum*this.i;
   }
@@ -86,7 +84,7 @@ class PIDAutoTuner extends PID {
     this.PIDSum = this.error*this.p - this.yDiff*this.d + this.errorSum*this.i;
   }
   
-  public void updateYP() {
+  public void updateP() {
     this.summationTerm = (this.error *
                 (this.yDiff/this.PIDAccDiff) *
                 this.error);
@@ -98,7 +96,7 @@ class PIDAutoTuner extends PID {
     println();
   }
   
-  public void updateYI() {
+  public void updateI() {
     this.summationTerm = (this.error *
                 (this.yDiff/this.PIDAccDiff) *
                 this.errorSum);
@@ -106,7 +104,7 @@ class PIDAutoTuner extends PID {
     this.partialDerivativeI = (-2/timeStep) * this.iSum;
   }
   
-  public void updateYD() {
+  public void updateD() {
     this.summationTerm = (this.error *
                 (this.yDiff/this.PIDAccDiff) *
                 this.yDiff);
@@ -133,9 +131,9 @@ class PIDAutoTuner extends PID {
   
   public void updateConstants() {
     println("Old Constants", this.p, this.i, this.d);
-    this.p += this.pLearningRate * this.partialDerivativeP;
-    this.i += this.iLearningRate * this.partialDerivativeI;
-    this.d += this.dLearningRate * this.partialDerivativeD;
+    this.p -= this.pLearningRate * this.partialDerivativeP;
+    this.i -= this.iLearningRate * this.partialDerivativeI;
+    this.d -= this.dLearningRate * this.partialDerivativeD;
     
     println(
             "Partial Derivatives",
@@ -146,8 +144,8 @@ class PIDAutoTuner extends PID {
     println("New Constants", this.p, this.i, this.d);
     println(" ");
     
-    this.p = constrain(abs(this.p), 0, 1);
-    this.i = constrain(abs(this.i), 0, 1);
-    this.d = constrain(abs(this.d), 0, 1);
+    this.p = abs(this.p);
+    this.i = abs(this.i);
+    this.d = abs(this.d);
   }
 }

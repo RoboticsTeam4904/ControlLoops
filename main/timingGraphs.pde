@@ -21,13 +21,14 @@ class TimingGrapher {
   }
   
   int ftopos(float f) {
-    return yPos - (int) f;
+    return (int) (yPos - (10 *  f));
   }
   
   void display() {  
-    //draws the motor
+    strokeWeight(2);
     fill(255,255,255);
     rect(xPos, yPos-100, 400, 100);
+    strokeWeight(1);
     stroke(0, 255, 0);
        
     stroke(0, 0, 0);
@@ -43,7 +44,12 @@ class TimingGrapher {
       scale /= 1.5;
     }
     
+    textSize(12);
+    
+    text("time ", xPos - 35, yPos - 50);
+    
+    text("iteration ", xPos + 180, yPos + 20);
+    
     textSize(15);
-    text("Velocity ", 0, 0);
   }
 }

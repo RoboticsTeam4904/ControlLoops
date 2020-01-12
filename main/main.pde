@@ -5,6 +5,8 @@ boolean alreadySetFinished= false;
 float timeFromStart= millis()/1000;
 float framesOnTarget=0;
 
+float startTime = 0;
+
 float threshold = 0.05;
 
 //PID pid = new PID(1, 0, 3, timeStep);
@@ -23,18 +25,21 @@ void setup() {
   g.yPos = 450;
   
   size(500,500);
-  background(255);
   frameRate(60);
 }
 
 void draw() {
-  background(255,255,255);
+  background(245);
   float pidOut = pid.update(fly.angularVelocity, fly.lastAV, targetVelocity);
   fly.update(pidOut, timeStep);
   fly.display();
   g.addPoint(fly.angularVelocity);
   g.display();
   timingGraph.display();
+  
+  pid.updateP();
+  pid.updateI();
+  pid.updateD();
   
   text("P: " + pid.p, 50, 250);
   text("I: " + pid.i, 50, 270);
@@ -48,9 +53,8 @@ void draw() {
    }
   
   if (framesOnTarget > 20){
-    println(fly.angularVelocity);
     if(! alreadySetFinished){
-      timeFromStart= millis()/1000.0;
+      timeFromStart= (millis() - startTime)/1000.0;
       alreadySetFinished=true;
     }
   text("Finished in : "+ timeFromStart, 50, 50 );
@@ -65,8 +69,10 @@ void draw() {
 void reset() {
       fly.angularVelocity = 0;
       fly.lastAV = 0;
+      pid.errorSum = 0;
       alreadySetFinished = false;
       framesOnTarget = 0;
       g.points.clear();
       g.scale = g.startScale;
+      startTime = millis();
 }

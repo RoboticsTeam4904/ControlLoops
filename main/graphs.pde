@@ -28,8 +28,10 @@ class Grapher {
   
   void display() {  
     //draws the motor
+    strokeWeight(2);
     fill(255,255,255);
     rect(xPos, yPos-100, 400, 100);
+    strokeWeight(1);
     stroke(0, 255, 0);
    
     line(xPos, yPos - target, xPos + 400, yPos - target);
@@ -47,8 +49,12 @@ class Grapher {
       scale /= 1.5;
     }
     
+    textSize(12);
+    
+    text("v ", xPos - 15, yPos - 45);
+    
+    text("time ", xPos + 190, yPos + 20);
     
     textSize(15);
-    text("Velocity ", 0, 0);
   }
 }
