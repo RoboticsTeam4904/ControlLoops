@@ -1,11 +1,11 @@
 Flywheel fly = new Flywheel();
-float timeStep = 0.1;
+float timeStep = 0.01666666667;
 
 boolean alreadySetFinished= false;
 float timeFromStart= millis()/1000;
 float framesOnTarget=0;
 
-PID pid = new PID(0.1, 0, 1, timeStep);
+PID pid = new PID(1, 0, 3, timeStep);
 
 float targetVelocity = 50;
 
@@ -14,6 +14,7 @@ Grapher g = new Grapher(targetVelocity);
 void setup() {
   size(500,500);
   background(255);
+  frameRate(60);
 }
 
 void draw() {
