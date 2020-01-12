@@ -35,6 +35,10 @@ void draw() {
   g.addPoint(fly.angularVelocity);
   g.display();
   timingGraph.display();
+  
+  text("P: " + pid.p, 50, 250);
+  text("I: " + pid.i, 50, 270);
+  text("D: " + pid.d, 50, 290);
       
   if(abs(targetVelocity-fly.angularVelocity)<threshold) {
      framesOnTarget +=1;
