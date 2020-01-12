@@ -84,7 +84,7 @@ class PIDAutoTuner extends PID {
     this.PIDSum = this.error*this.p - this.yDiff*this.d + this.errorSum*this.i;
   }
   
-  public void updateYP() {
+  public void updateP() {
     this.summationTerm = (this.error *
                 (this.yDiff/this.PIDAccDiff) *
                 this.error);
@@ -96,7 +96,7 @@ class PIDAutoTuner extends PID {
     println();
   }
   
-  public void updateYI() {
+  public void updateI() {
     this.summationTerm = (this.error *
                 (this.yDiff/this.PIDAccDiff) *
                 this.errorSum);
@@ -104,7 +104,7 @@ class PIDAutoTuner extends PID {
     this.partialDerivativeI = (-2/timeStep) * this.iSum;
   }
   
-  public void updateYD() {
+  public void updateD() {
     this.summationTerm = (this.error *
                 (this.yDiff/this.PIDAccDiff) *
                 this.yDiff);
@@ -131,9 +131,9 @@ class PIDAutoTuner extends PID {
   
   public void updateConstants() {
     println("Old Constants", this.p, this.i, this.d);
-    this.p += this.pLearningRate * this.partialDerivativeP;
-    this.i += this.iLearningRate * this.partialDerivativeI;
-    this.d += this.dLearningRate * this.partialDerivativeD;
+    this.p -= this.pLearningRate * this.partialDerivativeP;
+    this.i -= this.iLearningRate * this.partialDerivativeI;
+    this.d -= this.dLearningRate * this.partialDerivativeD;
     
     println(
             "Partial Derivatives",

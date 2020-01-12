@@ -38,6 +38,10 @@ void draw() {
   g.display();
   timingGraph.display();
   
+  pid.updateP();
+  pid.updateI();
+  pid.updateD();
+  
   text("P: " + pid.p, 50, 250);
   text("I: " + pid.i, 50, 270);
   text("D: " + pid.d, 50, 290);
