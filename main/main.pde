@@ -1,9 +1,9 @@
 Flywheel fly = new Flywheel();
 float timeStep = 0.1;
 
-PID pid = new PID(15, 0, 0, timeStep);
+PID pid = new PID(1, 0, 0, timeStep);
 
-float targetVelocity = 30;
+float targetVelocity = 50;
 
 Grapher g = new Grapher(targetVelocity);
 

@@ -2,7 +2,7 @@ class Grapher {
   
   float target;
   
-  float scale = 2;
+  float scale = 3;
   
   ArrayList<Float> points;
   
