@@ -1,6 +1,10 @@
 Flywheel fly = new Flywheel();
 float timeStep = 0.1;
 
+boolean alreadySetFinished= false;
+float timeFromStart= millis()/1000;
+float framesOnTarget=0;
+
 PID pid = new PID(0.1, 0, 1, timeStep);
 
 float targetVelocity = 50;
@@ -19,4 +23,20 @@ void draw() {
   fly.display();
   g.addPoint(fly.angularVelocity);
   g.display();
+      
+  if(abs(targetVelocity-fly.angularVelocity)<0.01) {
+     framesOnTarget +=1;
+   }
+   else{
+     framesOnTarget =0;
+   }
+  
+  if (framesOnTarget > 15){
+    println(fly.angularVelocity);
+    if(! alreadySetFinished){
+      timeFromStart= millis()/1000;
+      alreadySetFinished=true;
+    }
+  text("Finished in : "+ timeFromStart, 50, 50 );
+}
 }
