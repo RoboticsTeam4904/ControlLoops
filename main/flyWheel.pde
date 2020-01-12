@@ -14,6 +14,7 @@ class Flywheel {
   float MOTOR_Y;
   float CIRCLE_RADIUS;
   float GEAR_RATIO;
+  float lastAV;
   
   //FloatList state;
   
@@ -31,6 +32,7 @@ class Flywheel {
     this.MOTOR_Y = 250;
     this.CIRCLE_RADIUS = 10;
     this.GEAR_RATIO = 1;
+    this.lastAV = 0;
     
     this.current = this.voltage/this.RESISTANCE;
     this.angularAcceleration = (this.TORQUE_CONSTANT*(
@@ -54,6 +56,7 @@ class Flywheel {
     if (this.angle >= 360) {
       this.angle -= 360;
     }
+    this.lastAV = this.angularVelocity;
     this.angularVelocity = this.angularVelocity + this.angularAcceleration * timeStep;
   }
   

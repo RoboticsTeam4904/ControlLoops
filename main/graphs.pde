@@ -4,6 +4,8 @@ class Grapher {
   
   float scale = 3;
   
+  float sum = 0;
+  
   ArrayList<Float> points;
   
   Grapher(float target) {
