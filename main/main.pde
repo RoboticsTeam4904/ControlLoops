@@ -25,12 +25,11 @@ void setup() {
   g.yPos = 450;
   
   size(500,500);
-  background(255);
   frameRate(60);
 }
 
 void draw() {
-  background(255,255,255);
+  background(245);
   float pidOut = pid.update(fly.angularVelocity, fly.lastAV, targetVelocity);
   fly.update(pidOut, timeStep);
   fly.display();

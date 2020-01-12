@@ -21,7 +21,7 @@ class TimingGrapher {
   }
   
   int ftopos(float f) {
-    return yPos - (10 * (int) f);
+    return (int) (yPos - (10 *  f));
   }
   
   void display() {  

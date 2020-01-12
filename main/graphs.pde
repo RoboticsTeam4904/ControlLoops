@@ -49,6 +49,11 @@ class Grapher {
       scale /= 1.5;
     }
     
+    textSize(12);
+    
+    text("v ", xPos - 15, yPos - 45);
+    
+    text("time ", xPos + 190, yPos + 20);
     
     textSize(15);
   }
