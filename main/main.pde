@@ -23,6 +23,8 @@ PIDAutoTuner pid = new PIDAutoTuner(1, 0, 5, timeStep);
 float startTargetVelocity = 50;
 float targetVelocity = startTargetVelocity;
 
+boolean usedGraph = false;
+
 Grapher g = new Grapher(targetVelocity);
 
 TimingGrapher timingGraph = new TimingGrapher();
@@ -87,6 +89,8 @@ void draw() {
     if(!messedWith) {
       pid.updateConstants();
       timingGraph.addPoint(timeFromStart);
+      float[] vals = {pid.p, pid.i, pid.d };
+      pid.pastVals.add(vals);
     }
     reset();
       
@@ -119,13 +123,28 @@ void reset() {
     
     targetVelocity = startTargetVelocity;
     g.target = targetVelocity;
-    messedWith = false;
+    
+    if(!usedGraph) {
+      messedWith = false;
+    }
 }
 
 void mouseClicked() {
   if(mouseY < g.yPos && mouseY > g.yPos - 100 && mouseX > g.xPos && mouseX < g.xPos + 400) {
     targetVelocity = g.yPos - mouseY;
     g.target = targetVelocity;
+    messedWith = true;
+  }
+  
+  if(mouseY < timingGraph.yPos && mouseY > timingGraph.yPos - 100 && mouseX > timingGraph.xPos && mouseX < timingGraph.xPos + 400) {
+    int x = (int) ((mouseX - timingGraph.xPos) / timingGraph.scale);
+    print(x);
+    reset();
+    float[] vals = pid.pastVals.get(x);
+    pid.p = vals[0];
+    pid.i = vals[1];
+    pid.d = vals[2];
+    usedGraph = true;
     messedWith = true;
   }
 }

@@ -46,6 +46,11 @@ class TimingGrapher {
       if(i*scale + 50 >= 450) {
         increaseScale = true;
       }
+      fill(0,255,0);
+      stroke(0,255,0);
+      circle((i*scale)+xPos, ftopos(points.get(i)), 2);
+      fill(0,0,0);
+      stroke(0,0,0);
     }
     if(increaseScale) {
       scale /= 1.5;

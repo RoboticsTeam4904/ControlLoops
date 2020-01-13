@@ -6,6 +6,7 @@ class PID {
   float timeStep;
   float error;
   float errorSum;
+  ArrayList<float[]> pastVals = new ArrayList<float[]>();
   
 PID(float p, float i, float d, float timeStep) {
     this.p = p;
@@ -40,7 +41,7 @@ class PIDAutoTuner extends PID {
   float partialDerivativeP;
   float partialDerivativeI;
   float partialDerivativeD;
-  
+    
   float pLearningRate;
   float iLearningRate;
   float dLearningRate;
