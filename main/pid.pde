@@ -64,9 +64,9 @@ class PIDAutoTuner extends PID {
     this.partialDerivativeI = 0;
     this.partialDerivativeD = 0;
     
-    this.pLearningRate = 0.4904 * pow(10,-8);
-    this.iLearningRate = 0.4904 * pow(10,-9);
-    this.dLearningRate = 0.4904 * pow(10,-5);
+    this.pLearningRate = 0.4904 * pow(10,-7);
+    this.iLearningRate = 0.4904 * pow(10,-8);
+    this.dLearningRate = 0.4904 * pow(10,-4);
     
     this.firstRun = true;
   }

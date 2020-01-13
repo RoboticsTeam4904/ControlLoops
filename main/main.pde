@@ -12,13 +12,16 @@ float bestP = 0;
 float bestI = 0;
 float bestD = 0;
 
+boolean messedWith = false;
+
 float threshold = 0.05;
 
 //PID pid = new PID(1, 0, 3, timeStep);
 
 PIDAutoTuner pid = new PIDAutoTuner(1, 0, 5, timeStep);
 
-float targetVelocity = 50;
+float startTargetVelocity = 50;
+float targetVelocity = startTargetVelocity;
 
 Grapher g = new Grapher(targetVelocity);
 
@@ -79,21 +82,50 @@ void draw() {
         bestI = pid.i;
         bestD = pid.d;
     }
-    pid.updateConstants();
+    
     pid.i = 0;
-    timingGraph.addPoint(timeFromStart);
+    if(!messedWith) {
+      pid.updateConstants();
+      timingGraph.addPoint(timeFromStart);
+    }
     reset();
       
   }
 }
 
 void reset() {
-      fly.angularVelocity = 0;
-      fly.lastAV = 0;
-      pid.errorSum = 0;
-      alreadySetFinished = false;
-      framesOnTarget = 0;
-      g.points.clear();
-      g.scale = g.startScale;
-      startTime = millis();
+    fly.angularVelocity = 0;
+    fly.lastAV = 0;
+    pid.errorSum = 0;
+    alreadySetFinished = false;
+    framesOnTarget = 0;
+    g.points.clear();
+    g.scale = g.startScale;
+    startTime = millis();
+    
+    pid.PIDSum = 1;
+    pid.pastPIDSum = 0;
+    pid.summationTerm = 0;
+    pid.yDiff = 1;
+    pid.PIDAccDiff = 1;
+    
+    pid.pSum = 0;
+    pid.iSum = 0;
+    pid.dSum = 0;
+        
+    pid.partialDerivativeP = 0;
+    pid.partialDerivativeI = 0;
+    pid.partialDerivativeD = 0;
+    
+    targetVelocity = startTargetVelocity;
+    g.target = targetVelocity;
+    messedWith = false;
+}
+
+void mouseClicked() {
+  if(mouseY < g.yPos && mouseY > g.yPos - 100 && mouseX > g.xPos && mouseX < g.xPos + 400) {
+    targetVelocity = g.yPos - mouseY;
+    g.target = targetVelocity;
+    messedWith = true;
+  }
 }
