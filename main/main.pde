@@ -47,6 +47,7 @@ void draw() {
   g.display();
   timingGraph.display();
   
+  pid.sum(fly.angularVelocity, fly.lastAV);
   pid.updateP();
   pid.updateI();
   pid.updateD();

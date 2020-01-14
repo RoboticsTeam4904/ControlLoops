@@ -46,8 +46,6 @@ class PIDAutoTuner extends PID {
   float iLearningRate;
   float dLearningRate;
   
-  boolean firstRun;
-  
   PIDAutoTuner(float p, float i, float d, float timeStep) {
     super(p, i, d, timeStep);
     
@@ -68,14 +66,18 @@ class PIDAutoTuner extends PID {
     this.pLearningRate = 0.4904 * pow(10,-7);
     this.iLearningRate = 0.4904 * pow(10,-8);
     this.dLearningRate = 0.4904 * pow(10,-4);
-    
-    this.firstRun = true;
   }
   
   /* called every frame */
   public void sum(float currentY,float pastY) {
     this.yDiff = currentY-pastY;
     this.PIDAccDiff = this.PIDSum-this.pastPIDSum;
+    
+    //println(this.yDiff);
+    //println(this.PIDAccDiff);
+    
+    /* prevents from dividing by zero on the first frame, but this method is
+        sketchy and should be double-checked */
     if (yDiff == 0 || this.PIDAccDiff == 0) {
       this.yDiff = 1;
       this.PIDAccDiff = 1;
@@ -89,12 +91,12 @@ class PIDAutoTuner extends PID {
     this.summationTerm = (this.error *
                 (this.yDiff/this.PIDAccDiff) *
                 this.error);
-    println(this.error, "^2  * (", this.yDiff, "/", this.PIDAccDiff, ")");
+    //println(this.error, "^2  * (", this.yDiff, "/", this.PIDAccDiff, ")");
     this.pSum += this.summationTerm;
-    println("Summation:", this.pSum);
+    //println("Summation:", this.pSum);
     this.partialDerivativeP = (-2/timeStep) * this.pSum;
-    println(this.partialDerivativeP);
-    println();
+    //println("Partial Derivative:", this.partialDerivativeP);
+    //println();
   }
   
   public void updateI() {
@@ -126,15 +128,14 @@ class PIDAutoTuner extends PID {
     this.partialDerivativeP = 0;
     this.partialDerivativeI = 0;
     this.partialDerivativeD = 0;
-    
-    this.firstRun = true;
   }
   
   public void updateConstants() {
     println("Old Constants", this.p, this.i, this.d);
-    this.p -= this.pLearningRate * this.partialDerivativeP;
-    this.i -= this.iLearningRate * this.partialDerivativeI;
-    this.d -= this.dLearningRate * this.partialDerivativeD;
+    this.p += this.pLearningRate * this.partialDerivativeP;
+    this.i += this.iLearningRate * this.partialDerivativeI;
+    //this.i = 0;
+    this.d += this.dLearningRate * this.partialDerivativeD;
     
     println(
             "Partial Derivatives",

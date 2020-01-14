@@ -42,7 +42,6 @@ class Flywheel {
     this.CIRCLE_RADIUS = 10;
     this.GEAR_RATIO = 1;
     this.lastAV = 0;
-
     
     this.current = this.STALL_VOLTAGE/this.RESISTANCE;
     this.angularAcceleration = (this.TORQUE_CONSTANT*(
