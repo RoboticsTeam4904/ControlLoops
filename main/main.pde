@@ -70,7 +70,7 @@ void draw() {
      framesOnTarget =0;
    }
   
-  if (framesOnTarget > 20){
+  if (framesOnTarget > 50){
     if(! alreadySetFinished){
       timeFromStart= (millis() - startTime)/1000.0;
       alreadySetFinished=true;
@@ -85,15 +85,23 @@ void draw() {
         bestD = pid.d;
     }
     
-    pid.i = 0;
+    //pid.i = 0;
     if(!messedWith) {
       pid.updateConstants();
+      //pid.i = 0;
       timingGraph.addPoint(timeFromStart);
       float[] vals = {pid.p, pid.i, pid.d };
       pid.pastVals.add(vals);
     }
     reset();
       
+  }
+  if (mousePressed == true) {
+    if(mouseY < g.yPos && mouseY > g.yPos - 100 && mouseX > g.xPos && mouseX < g.xPos + 400) {
+      targetVelocity = g.yPos - mouseY;
+      g.target = targetVelocity;
+      messedWith = true;
+    }
   }
 }
 
@@ -130,11 +138,6 @@ void reset() {
 }
 
 void mouseClicked() {
-  if(mouseY < g.yPos && mouseY > g.yPos - 100 && mouseX > g.xPos && mouseX < g.xPos + 400) {
-    targetVelocity = g.yPos - mouseY;
-    g.target = targetVelocity;
-    messedWith = true;
-  }
   
   if(mouseY < timingGraph.yPos && mouseY > timingGraph.yPos - 100 && mouseX > timingGraph.xPos && mouseX < timingGraph.xPos + 400) {
     int x = (int) ((mouseX - timingGraph.xPos) / timingGraph.scale);
