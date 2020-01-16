@@ -61,7 +61,7 @@ class Flywheel {
     //  this.voltage-(this.angularVelocity/this.ANGULAR_VELOCITY_CONSTANT))) / 
     //  (this.RESISTANCE * this.current);
     this.angularAcceleration = ((this.GEAR_RATIO * this.TORQUE_CONSTANT) / (this.RESISTANCE * this.ROTATIONAL_INERTIA)) * this.voltage - ((this.GEAR_RATIO * this.GEAR_RATIO * this.TORQUE_CONSTANT)/ (this.ANGULAR_VELOCITY_CONSTANT * this.RESISTANCE * this.ROTATIONAL_INERTIA)) * this.angularVelocity; 
-    this.angle = this.angle + this.angularVelocity * timeStep;
+    this.angle = this.angle + this.angularVelocity * timeStep * 10;
     if (this.angle >= 360) {
       this.angle -= 360;
     }
@@ -72,15 +72,15 @@ class Flywheel {
   void display() {  
     //draws the motor
     fill(255, 255, 255);
-    //ellipse(this.MOTOR_X, this.MOTOR_Y, this.CIRCLE_RADIUS*2, this.CIRCLE_RADIUS*2);
+    ellipse(this.MOTOR_X, this.MOTOR_Y, this.CIRCLE_RADIUS*2, this.CIRCLE_RADIUS*2);
     
-    ////draws the indicator for the motor rotation
-    //fill(255, 0, 0);
-    ////sine is negative because Processing y coordinates increase downwards
-    //ellipse(this.CIRCLE_RADIUS*cos(radians(this.angle))+MOTOR_X,
-    //        this.CIRCLE_RADIUS*-sin(radians(this.angle))+MOTOR_Y,
-    //        10,
-    //        10);
+    //draws the indicator for the motor rotation
+    fill(255, 0, 0);
+    //sine is negative because Processing y coordinates increase downwards
+    ellipse(this.CIRCLE_RADIUS*cos(radians(this.angle))+MOTOR_X,
+            this.CIRCLE_RADIUS*-sin(radians(this.angle))+MOTOR_Y,
+            10,
+            10);
     
     fill(0, 0, 0);
     textSize(15);
