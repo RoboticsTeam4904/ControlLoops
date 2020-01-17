@@ -63,6 +63,7 @@ void draw() {
   text("P: " + bestP, 350, 250);
   text("I: " + bestI, 350, 270);
   text("D: " + bestD, 350, 290);
+  text("Time:" + bestTime, 350, 310);
       
   if(abs(targetVelocity-fly.angularVelocity)<threshold) {
      framesOnTarget +=1;
