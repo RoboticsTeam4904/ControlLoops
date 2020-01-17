@@ -61,7 +61,7 @@ class Flywheel {
     //  this.voltage-(this.angularVelocity/this.ANGULAR_VELOCITY_CONSTANT))) / 
     //  (this.RESISTANCE * this.current);
     this.angularAcceleration = ((this.GEAR_RATIO * this.TORQUE_CONSTANT) / (this.RESISTANCE * this.ROTATIONAL_INERTIA)) * this.voltage - ((this.GEAR_RATIO * this.GEAR_RATIO * this.TORQUE_CONSTANT)/ (this.ANGULAR_VELOCITY_CONSTANT * this.RESISTANCE * this.ROTATIONAL_INERTIA)) * this.angularVelocity; 
-    this.angle = this.angle + this.angularVelocity * timeStep * 10;
+    this.angle -= this.angularVelocity * timeStep * 10;
     if (this.angle >= 360) {
       this.angle -= 360;
     }
