@@ -18,7 +18,7 @@ float threshold = 0.05;
 
 //PID pid = new PID(1, 0, 3, timeStep);
 
-PIDAutoTuner pid = new PIDAutoTuner(1, 0, 5, timeStep);
+PIDAutoTuner pid = new PIDAutoTuner(6.10, 0, 55.65, timeStep);
 
 float targetDistance = 4;
 
