@@ -86,7 +86,6 @@ class Flywheel {
     textSize(15);
     text("Flywheel", MOTOR_X-25, 30);
     textSize(10);
-    text("Angle: "+round(this.angle), MOTOR_X-25, MOTOR_Y+50);
-    text("Velocity: "+this.angularVelocity, MOTOR_X-25, MOTOR_Y+65);
+    text("Velocity: "+this.angularVelocity, MOTOR_X-40, MOTOR_Y+65);
   }
 }

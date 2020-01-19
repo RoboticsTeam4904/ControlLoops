@@ -20,7 +20,10 @@ float threshold = 0.05;
 
 PIDAutoTuner pid = new PIDAutoTuner(1, 0, 5, timeStep);
 
-float startTargetVelocity = 50;
+float targetDistance = 4;
+
+float startTargetVelocity = DistanceCalculator.getVelocity(targetDistance);
+
 float targetVelocity = startTargetVelocity;
 
 boolean usedGraph = false;
@@ -30,6 +33,8 @@ Grapher g = new Grapher(targetVelocity);
 TimingGrapher timingGraph = new TimingGrapher();
 
 void setup() {
+  
+  println(targetVelocity);
   
   timingGraph.yPos = 150;
   g.yPos = 450;
